@@ -57,6 +57,7 @@ public/uploads/
 *.db
 dump/
 data/
+.frontend/src/pages/Register.jsx
 
 # ==============================
 # Cache
