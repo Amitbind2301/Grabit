@@ -9,98 +9,91 @@ import { useSelector } from 'react-redux'
 import { FaMinus, FaPlus } from "react-icons/fa6";
 
 const AddToCartButton = ({ data }) => {
-    const { fetchCartItem, updateCartItem, deleteCartItem } = useGlobalContext()
-    const [loading, setLoading] = useState(false)
-    const cartItem = useSelector(state => state.cartItem.cart)
-    const [isAvailableCart, setIsAvailableCart] = useState(false)
-    const [qty, setQty] = useState(0)
-    const [cartItemDetails,setCartItemsDetails] = useState()
+  const { fetchCartItem, updateCartItem, deleteCartItem } = useGlobalContext()
+  const cartItem = useSelector(state => state.cartItem.cart)
 
-    const handleADDTocart = async (e) => {
-        e.preventDefault()
-        e.stopPropagation()
+  const [loading, setLoading] = useState(false)
+  const [isAvailableCart, setIsAvailableCart] = useState(false)
+  const [qty, setQty] = useState(0)
+  const [cartItemDetails, setCartItemDetails] = useState(null)
 
-        try {
-            setLoading(true)
+  const handleAddToCart = async (e) => {
+    e.preventDefault()
+    e.stopPropagation()
 
-            const response = await Axios({
-                ...SummaryApi.addTocart,
-                data: {
-                    productId: data?._id
-                }
-            })
+    try {
+      setLoading(true)
+      const response = await Axios({
+        ...SummaryApi.addTocart,
+        data: { productId: data._id }
+      })
 
-            const { data: responseData } = response
-
-            if (responseData.success) {
-                toast.success(responseData.message)
-                if (fetchCartItem) {
-                    fetchCartItem()
-                }
-            }
-        } catch (error) {
-            AxiosToastError(error)
-        } finally {
-            setLoading(false)
-        }
-
+      if (response.data.success) {
+        toast.success(response.data.message)
+        fetchCartItem && fetchCartItem()
+      }
+    } catch (error) {
+      AxiosToastError(error)
+    } finally {
+      setLoading(false)
     }
+  }
 
-    //checking this item in cart or not
-    useEffect(() => {
-        const checkingitem = cartItem.some(item => item.productId._id === data._id)
-        setIsAvailableCart(checkingitem)
+  useEffect(() => {
+    const product = cartItem.find(item => item.productId._id === data._id)
+    setIsAvailableCart(Boolean(product))
+    setQty(product?.quantity || 0)
+    setCartItemDetails(product || null)
+  }, [cartItem, data])
 
-        const product = cartItem.find(item => item.productId._id === data._id)
-        setQty(product?.quantity)
-        setCartItemsDetails(product)
-    }, [data, cartItem])
+  const increaseQty = async (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    await updateCartItem(cartItemDetails._id, qty + 1)
+  }
 
-
-    const increaseQty = async(e) => {
-        e.preventDefault()
-        e.stopPropagation()
-    
-       const response = await  updateCartItem(cartItemDetails?._id,qty+1)
-        
-       if(response.success){
-        toast.success("Item added")
-       }
+  const decreaseQty = async (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (qty === 1) {
+      deleteCartItem(cartItemDetails._id)
+    } else {
+      await updateCartItem(cartItemDetails._id, qty - 1)
     }
+  }
 
-    const decreaseQty = async(e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        if(qty === 1){
-            deleteCartItem(cartItemDetails?._id)
-        }else{
-            const response = await updateCartItem(cartItemDetails?._id,qty-1)
+  return (
+    <>
+      {isAvailableCart ? (
+        <div className='flex items-center border border-green-600 rounded-full h-7'>
+          <button
+            onClick={decreaseQty}
+            className='px-2 text-green-600 hover:bg-green-50'
+          >
+            <FaMinus size={11} />
+          </button>
 
-            if(response.success){
-                toast.success("Item remove")
-            }
-        }
-    }
-    return (
-        <div className='w-full max-w-[150px]'>
-            {
-                isAvailableCart ? (
-                    <div className='flex w-full h-full'>
-                        <button onClick={decreaseQty} className='bg-green-600 hover:bg-green-700 text-white flex-1 w-full p-1 rounded flex items-center justify-center'><FaMinus /></button>
+          <span className='px-3 text-xs font-semibold'>
+            {qty}
+          </span>
 
-                        <p className='flex-1 w-full font-semibold px-1 flex items-center justify-center'>{qty}</p>
-
-                        <button onClick={increaseQty} className='bg-green-600 hover:bg-green-700 text-white flex-1 w-full p-1 rounded flex items-center justify-center'><FaPlus /></button>
-                    </div>
-                ) : (
-                    <button onClick={handleADDTocart} className='bg-green-600 hover:bg-green-700 text-white px-2 lg:px-4 py-1 rounded'>
-                        {loading ? <Loading /> : "Add"}
-                    </button>
-                )
-            }
-
+          <button
+            onClick={increaseQty}
+            className='px-2 text-green-600 hover:bg-green-50'
+          >
+            <FaPlus size={11} />
+          </button>
         </div>
-    )
+      ) : (
+        <button
+          onClick={handleAddToCart}
+          className='border border-green-600 text-green-600 text-xs font-semibold px-4 py-[3px] rounded-full hover:bg-green-600 hover:text-white transition'
+        >
+          {loading ? <Loading /> : 'Add'}
+        </button>
+      )}
+    </>
+  )
 }
 
 export default AddToCartButton

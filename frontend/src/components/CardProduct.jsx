@@ -1,68 +1,63 @@
 import React from 'react'
-import { DisplayPriceInRupees } from '../utils/DisplayPriceInRupees'
 import { Link } from 'react-router-dom'
+import { DisplayPriceInRupees } from '../utils/DisplayPriceInRupees'
 import { valideURLConvert } from '../utils/valideURLConvert'
 import { pricewithDiscount } from '../utils/PriceWithDiscount'
-import SummaryApi from '../common/SummaryApi'
-import AxiosToastError from '../utils/AxiosToastError'
-import Axios from '../utils/Axios'
-import toast from 'react-hot-toast'
-import { useState } from 'react'
-import { useGlobalContext } from '../provider/GlobalProvider'
 import AddToCartButton from './AddToCartButton'
 
-const CardProduct = ({data}) => {
-    const url = `/product/${valideURLConvert(data.name)}-${data._id}`
-    const [loading,setLoading] = useState(false)
-  
+const CardProduct = ({ data }) => {
+  const url = `/product/${valideURLConvert(data.name)}-${data._id}`
+
   return (
-    <Link to={url} className='border py-2 lg:p-4 grid gap-1 lg:gap-3 min-w-36 lg:min-w-52 rounded cursor-pointer bg-white' >
-      <div className='min-h-20 w-full max-h-24 lg:max-h-32 rounded overflow-hidden'>
-            <img 
-                src={data.image[0]}
-                className='w-full h-full object-scale-down lg:scale-125'
-            />
+    <Link
+      to={url}
+      className='relative border bg-white rounded-xl p-3 flex flex-col gap-2 w-[180px] h-full hover:shadow-lg shadow-black/40 transition'
+    >
+      {/* Discount badge */}
+      {Boolean(data.discount) && (
+        <span className='absolute top-2 left-2 bg-green-600 text-white text-[11px] font-semibold px-2 py-[2px] rounded'>
+          {data.discount}% OFF
+        </span>
+      )}
+
+      {/* Delivery time */}
+      <span className='absolute top-2 right-2 bg-green-50 text-green-700 text-[11px] px-2 py-[2px] rounded'>
+        10 min
+      </span>
+
+      {/* Image */}
+      <div className='h-[120px] flex items-center justify-center mt-4'>
+        <img
+          src={data.image?.[0]}
+          alt={data.name}
+          className='max-h-full object-contain'
+        />
       </div>
-      <div className='flex items-center gap-1'>
-        <div className='rounded text-xs w-fit p-[1px] px-2 text-green-600 bg-green-50'>
-              10 min 
-        </div>
-        <div>
-            {
-              Boolean(data.discount) && (
-                <p className='text-green-600 bg-green-100 px-2 w-fit text-xs rounded-full'>{data.discount}% discount</p>
-              )
-            }
-        </div>
-      </div>
-      <div className='px-2 lg:px-0 font-medium text-ellipsis text-sm lg:text-base line-clamp-2'>
+
+      {/* Product name (NOT bold like Blinkit) */}
+      <div className='text-sm font-semibold text-gray-900 line-clamp-2 min-h-[36px]'>
         {data.name}
       </div>
-      <div className='w-fit gap-1 px-2 lg:px-0 text-sm lg:text-base'>
-        {data.unit} 
-        
+
+      {/* Unit */}
+      <div className='text-xs text-gray-500 min-h-[18px]'>
+        {data.unit}
       </div>
 
-      <div className='px-2 lg:px-0 flex items-center justify-between gap-1 lg:gap-3 text-sm lg:text-base'>
-        <div className='flex items-center gap-1'>
-          <div className='font-semibold'>
-              {DisplayPriceInRupees(pricewithDiscount(data.price,data.discount))} 
-          </div>
-          
-          
-        </div>
-        <div className=''>
-          {
-            data.stock == 0 ? (
-              <p className='text-red-500 text-sm text-center'>Out of stock</p>
-            ) : (
-              <AddToCartButton data={data} />
-            )
-          }
-            
-        </div>
-      </div>
+      {/* Price + Button */}
+      <div className='flex items-center justify-between mt-auto'>
+        <span className='font-semibold text-sm'>
+          {DisplayPriceInRupees(
+            pricewithDiscount(data.price, data.discount)
+          )}
+        </span>
 
+        {data.stock === 0 ? (
+          <span className='text-xs text-red-500'>Out of stock</span>
+        ) : (
+          <AddToCartButton data={data} />
+        )}
+      </div>
     </Link>
   )
 }
