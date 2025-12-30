@@ -39,7 +39,7 @@ const CheckoutPage = () => {
         toast.success(responseData.message)
         fetchCartItem?.()
         fetchOrder?.()
-        navigate('/success', {
+        navigate('/Success', {
           state: { text: "Order" }
         })
       }
