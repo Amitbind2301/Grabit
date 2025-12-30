@@ -1,16 +1,33 @@
-import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import React, { useEffect } from "react"
+import { useNavigate, useLocation } from "react-router-dom"
+import toast from "react-hot-toast"
+import { useGlobalContext } from "../provider/GlobalProvider"
 
-const Success = () => {
+const SuccessPage = () => {
+  const navigate = useNavigate()
   const location = useLocation()
-    
-    console.log("location",)  
+  const { fetchCartItem, fetchOrder } = useGlobalContext()
+
+  useEffect(() => {
+    fetchCartItem?.()
+    fetchOrder?.()
+
+    toast.success("Payment successful 🎉")
+
+    const timer = setTimeout(() => {
+      //navigate("/orders")
+    }, 2000)
+
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
-    <div className='m-2 w-full max-w-md bg-green-200 p-4 py-5 rounded mx-auto flex flex-col justify-center items-center gap-5'>
-        <p className='text-green-800 font-bold text-lg text-center'>{Boolean(location?.state?.text) ? location?.state?.text : "Payment" } Successfully</p>
-        <Link to="/" className="border border-green-900 text-green-900 hover:bg-green-900 hover:text-white transition-all px-4 py-1">Go To Home</Link>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-green-50">
+      <h1 className="text-2xl font-bold text-green-700">Payment Successful 🎉</h1>
+      <p className="mt-2 text-gray-600">Your order has been placed successfully.</p>
+      <p className="text-sm text-gray-400 mt-1">Redirecting to myorders...</p>
     </div>
   )
 }
 
-export default Success
+export default SuccessPage
