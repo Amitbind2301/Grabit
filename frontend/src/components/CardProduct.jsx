@@ -11,7 +11,7 @@ const CardProduct = ({ data }) => {
   return (
     <Link
       to={url}
-      className='relative border bg-white rounded-xl p-3 flex flex-col gap-2 w-[180px] h-full hover:shadow-lg shadow-black/40 transition'
+      className='relative border bg-white rounded-xl p-3 flex flex-col gap-2 w-full h-full hover:shadow-lg shadow-black/40 transition'
     >
       {/* Discount badge */}
       {Boolean(data.discount) && (
