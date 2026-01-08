@@ -5,8 +5,6 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const Register = () => {
 
-    const REGISTRATION_ENABLED = false; // 🔒 CHANGE TO true TO ENABLE AGAIN
-
     const [data, setData] = useState({
         name: "",
         email: "",
@@ -26,11 +24,17 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        // 🔒 BLOCK REGISTRATION FROM UI
-        if (!REGISTRATION_ENABLED) {
-            toast.error("Registration is currently closed")
-            return
+        if (!data.name || !data.email || !data.password || !data.confirmPassword) {
+            return toast.error("All fields are required")
         }
+
+        if (data.password !== data.confirmPassword) {
+            return toast.error("Passwords do not match")
+        }
+
+        // TODO: add API call here
+        toast.success("Registration Successful")
+        navigate("/login")
     }
 
     return (
@@ -38,29 +42,70 @@ const Register = () => {
             <div className='bg-white my-4 w-full max-w-lg mx-auto rounded p-7'>
                 <p className='text-lg font-semibold'>Welcome to Grabit</p>
 
-                {!REGISTRATION_ENABLED && (
-                    <p className="bg-red-100 text-red-700 p-3 rounded mt-4">
-                        🚫 Registration is closed. This is a personal project.
-                    </p>
-                )}
-
                 <form className='grid gap-4 mt-6' onSubmit={handleSubmit}>
                     
-                    <input disabled className='bg-gray-200 p-2 rounded' placeholder='Name disabled' />
-                    <input disabled className='bg-gray-200 p-2 rounded' placeholder='Email disabled' />
-                    <input disabled className='bg-gray-200 p-2 rounded' placeholder='Password disabled' />
-                    <input disabled className='bg-gray-200 p-2 rounded' placeholder='Confirm Password disabled' />
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Name"
+                        value={data.name}
+                        onChange={handleChange}
+                        className='p-2 rounded border'
+                    />
+
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        value={data.email}
+                        onChange={handleChange}
+                        className='p-2 rounded border'
+                    />
+
+                    <div className='relative'>
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            name="password"
+                            placeholder="Password"
+                            value={data.password}
+                            onChange={handleChange}
+                            className='p-2 rounded border w-full'
+                        />
+                        <span
+                            onClick={() => setShowPassword(prev => !prev)}
+                            className='absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer'
+                        >
+                            {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
+                        </span>
+                    </div>
+
+                    <div className='relative'>
+                        <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            name="confirmPassword"
+                            placeholder="Confirm Password"
+                            value={data.confirmPassword}
+                            onChange={handleChange}
+                            className='p-2 rounded border w-full'
+                        />
+                        <span
+                            onClick={() => setShowConfirmPassword(prev => !prev)}
+                            className='absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer'
+                        >
+                            {showConfirmPassword ? <FaRegEye /> : <FaRegEyeSlash />}
+                        </span>
+                    </div>
 
                     <button
-                        disabled
-                        className="bg-gray-500 text-white py-2 rounded font-semibold my-3 tracking-wide cursor-not-allowed"
+                        type="submit"
+                        className="bg-green-600 hover:bg-green-700 text-white py-2 rounded font-semibold tracking-wide my-3"
                     >
-                        Registration Closed
+                        Register
                     </button>
                 </form>
 
                 <p>
-                    Already have account ?{" "}
+                    Already have account?{" "}
                     <Link
                         to={"/login"}
                         className='font-semibold text-green-700 hover:text-green-800'
