@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { FaRegEyeSlash } from "react-icons/fa6";
-import { FaRegEye } from "react-icons/fa6";
+import { FaRegEyeSlash, FaRegEye } from "react-icons/fa6";
 import toast from 'react-hot-toast';
 import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
@@ -9,7 +8,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import fetchUserDetails from '../utils/fetchUserDetails';
 import { useDispatch } from 'react-redux';
 import { setUserDetails } from '../store/userSlice';
-
 
 const Login = () => {
     const [data, setData] = useState({
@@ -32,7 +30,6 @@ const Login = () => {
     }
 
     const valideValue = Object.values(data).every(el => el)
-
 
     const handleSubmit = async(e)=>{
         e.preventDefault()
@@ -65,13 +62,18 @@ const Login = () => {
         } catch (error) {
             AxiosToastError(error)
         }
-
-
-
     }
+
     return (
         <section className='w-full container mx-auto px-2'>
             <div className='bg-white my-4 w-full max-w-lg mx-auto rounded p-7'>
+
+                {/* 🔹 Demo Credential Hint Box */}
+                <div className='bg-blue-100 border border-blue-300 p-3 rounded mb-4 text-sm'>
+                    <p className='font-semibold text-blue-700'>Demo Login Credentials</p>
+                    <p>Email: <span className='font-medium'>demo@test.com</span></p>
+                    <p>Password: <span className='font-medium'>12345</span></p>
+                </div>
 
                 <form className='grid gap-4 py-4' onSubmit={handleSubmit}>
                     <div className='grid gap-1'>
@@ -86,6 +88,7 @@ const Login = () => {
                             placeholder='Enter your email'
                         />
                     </div>
+                    
                     <div className='grid gap-1'>
                         <label htmlFor='password'>Password :</label>
                         <div className='bg-blue-50 p-2 border rounded flex items-center focus-within:border-primary-200'>
@@ -99,20 +102,15 @@ const Login = () => {
                                 placeholder='Enter your password'
                             />
                             <div onClick={() => setShowPassword(preve => !preve)} className='cursor-pointer'>
-                                {
-                                    showPassword ? (
-                                        <FaRegEye />
-                                    ) : (
-                                        <FaRegEyeSlash />
-                                    )
-                                }
+                                {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
                             </div>
                         </div>
                         <Link to={"/forgot-password"} className='block ml-auto hover:text-primary-200'>Forgot password ?</Link>
                     </div>
     
-                    <button disabled={!valideValue} className={` ${valideValue ? "bg-green-800 hover:bg-green-700" : "bg-gray-500" }    text-white py-2 rounded font-semibold my-3 tracking-wide`}>Login</button>
-
+                    <button disabled={!valideValue} className={`${valideValue ? "bg-green-800 hover:bg-green-700" : "bg-gray-500"} text-white py-2 rounded font-semibold my-3 tracking-wide`}>
+                        Login
+                    </button>
                 </form>
 
                 <p>
@@ -124,4 +122,3 @@ const Login = () => {
 }
 
 export default Login
-
